@@ -1,0 +1,23 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Rust
+/target/
+**/*.rs.bk
+
+# Go
+/bin/
+*.exe
+*.test
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+
+# Build outputs
+/dist/
