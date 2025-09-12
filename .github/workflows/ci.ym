@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          components: rustfmt, clippy
+
+      - name: Build & Test Rust dataplane
+        run: |
+          cd dataplane-rs
+          cargo build --release
+          cargo test --verbose
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.x'
+
+      - name: Build & Test Go control plane
+        run: |
+          cd control-plane-go
+          go build ./...
+          go test ./...
