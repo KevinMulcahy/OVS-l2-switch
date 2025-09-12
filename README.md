@@ -1,139 +1,147 @@
-# Open Source Layer 2 Switch
+# OVS Layer 2 Switch
 
-An open-source Layer 2 switching platform designed to run on commodity PC hardware.  
-This project aims to provide a modular, extensible, and community-driven virtual switch suitable for labs, edge deployments, and NFV environments.
-
----
-
-## ✨ Vision
-Build a lightweight, extensible, community-driven Layer 2 software switch that:
-- Runs on standard x86_64 hardware
-- Provides modular datapaths (kernel, DPDK, XDP/eBPF)
-- Includes simple CLI, REST API, and GUI management
-- Offers VLAN, MAC learning, and forwarding features out of the box
-- Is easy to build, test, and contribute to
+A Linux-based Layer 2 managed switch using Open vSwitch (OVS) with automatic interface detection, VLAN support, port mirroring, traffic shaping, and advanced switching features.
 
 ---
 
-## 🛠️ Features (Planned)
+## Quick Start
 
-### MVP
-- Basic Layer 2 forwarding (MAC learning, flooding, unicast)
-- VLAN support (802.1Q tagging/untagging)
-- Simple management (CLI + REST API)
-- Containerized deployment (Docker/Podman)
-- Automated tests and CI workflows
+Follow these steps to get the OVS Layer 2 switch up and running:
 
-### Later Phases
-- DPDK and/or AF_XDP acceleration
-- Spanning Tree Protocol (RSTP)
-- Link Aggregation (LACP)
-- QoS and traffic shaping
-- ACLs and port mirroring
-- Monitoring and metrics (Prometheus, Graylog)
-- GUI and mobile management apps
-- SDKs in Python, Go, Node.js
+1. Install prerequisites on your Linux machine
+2. Run the interface discovery script
+3. Deploy OVS with dynamic bridge setup
+4. Configure VLANs, LACP, QoS, and OpenFlow as needed
+5. Use management scripts for monitoring, backups, and troubleshooting
 
----
+### Example Commands
 
-## 📐 Architecture
-
-- **Datapath Layer**  
-  Handles packet I/O and forwarding. Modular design:
-  - Kernel networking stack (AF_PACKET/TAP) for MVP
-  - DPDK backend for high throughput
-  - eBPF/XDP backend for kernel-accelerated performance
-
-- **Control Plane**  
-  - MAC learning, VLAN table, STP/LACP logic
-  - Flow handling policies
-
-- **Management Plane**  
-  - CLI (`switchctl`) for interactive management
-  - REST API with OpenAPI spec
-  - Future: GUI and mobile frontends
-
----
-
-## 📅 Roadmap
-
-See [ROADMAP.md](ROADMAP.md) for the full phased plan.  
-Highlights:
-- **Phase 1:** Repo setup, CI/CD, minimal datapath  
-- **Phase 2:** Core switching (MAC learning, VLANs, STP)  
-- **Phase 3:** Management APIs + persistence  
-- **Phase 4:** CLI/GUI/mobile interfaces  
-- **Phase 5:** Performance datapaths (DPDK, XDP)  
-- **Phase 6:** Ecosystem, community, and v1.0 release  
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Linux (Ubuntu, Debian, or Fedora recommended)
-- Git, Make, GCC/Clang, Python3
-- (Optional) Docker/Podman for containerized testing
-
-### Quick Start (MVP Datapath)
 ```bash
-# Clone repo
-git clone https://github.com/your-org/ovs-layer2-switch.git
-cd ovs-layer2-switch
+# Discover interfaces (excluding management)
+sudo ./discover-interfaces.sh
 
-# Build
-make build
+# Deploy the OVS bridge and add interfaces
+sudo ./deploy-ovs-switch.sh
 
-# Run basic test harness
-make test
+# Configure the switch interactively
+sudo ./configure-switch.sh
 
-Example (veth test)
+Usage Notes
+	•	You can specify a custom management interface:
 
-# Create veth pair
-sudo ip link add veth0 type veth peer name veth1
-sudo ip link set veth0 up
-sudo ip link set veth1 up
+MANAGEMENT_INTERFACE=ens18 sudo ./discover-interfaces.sh
 
-# Start switch
-sudo ./bin/switchd --add-port veth0 --add-port veth1
+	•	Scripts automatically detect and handle any number of interfaces
+	•	Generated management scripts are located in /usr/local/bin/ovs-scripts/
 
+Key Benefits
+	1.	Automatic Detection: Discovers NICs dynamically
+	2.	Flexible Configuration: Supports 2, 5, 10, or 50+ interfaces
+	3.	Safety: Preserves the management interface
+	4.	Scalable: Performance tuning adjusts to interface count
+	5.	Management Tools: Generates scripts tailored to your setup
+	6.	Recovery: Provides backup and restore capabilities
+
+Example Scenarios
+
+# Machine with 8 interfaces
+sudo ./discover-interfaces.sh
+sudo ./deploy-ovs-switch.sh
+
+# Machine with 20 interfaces and custom management
+MANAGEMENT_INTERFACE=ens18 sudo ./discover-interfaces.sh
+sudo ./deploy-ovs-switch.sh
+
+# Minimal 2-interface setup
+sudo ./discover-interfaces.sh
+sudo ./deploy-ovs-switch.sh
+
+Prerequisites
+	•	Linux machine with multiple physical network interfaces (2 or more)
+	•	Root access to the system
+	•	Basic understanding of networking concepts
+	•	At least one interface reserved for management (recommended)
+
+Architecture Overview
+
+    ┌───────────────────────────────┐
+    │         Linux Host            │
+    │ ┌─────────────┐               │
+    │ │   Open vSwitch (OVS)        │
+    │ │ ┌─────────┐                 │
+    │ │ │ br0     │                 │
+    │ │ │ eth1…N │                 │
+    │ │ └─────────┘                 │
+    │ └─────────────┘               │
+    └───────────────────────────────┘
+
+Installation and Setup
+
+Step 1: Discover Interfaces
+
+sudo ./discover-interfaces.sh
+
+	•	Prompts for confirmation before proceeding
+	•	Validates that minimum interface requirements are met
+
+Step 2: Install OVS
+
+sudo ./install-ovs.sh
+
+	•	Detects your Linux distribution (Ubuntu, Debian, RHEL, CentOS, Fedora)
+	•	Installs required packages and dependencies
+	•	Enables and starts OVS services
+
+Step 3: Setup OVS Bridge
+
+sudo ./setup-ovs-bridge.sh
+
+	•	Creates the main bridge (br0)
+	•	Adds all discovered interfaces (excluding management)
+	•	Configures persistent bridge setup via systemd service
+
+Step 4: Configure Switch
+
+sudo ./configure-switch.sh
+
+	•	Interactive menu for:
+	•	VLANs
+	•	Port mirroring
+	•	QoS
+	•	Link aggregation (LACP)
+	•	OpenFlow controller
+	•	Exporting management scripts
+
+Management and Maintenance
+
+View Current Configuration
+
+sudo ./show-network-config.sh
+
+	•	Lists OVS bridges
+	•	Displays interface status
+	•	Shows port statistics
+
+Backup and Restore
+
+sudo ./backup-ovs-config.sh
+sudo ./restore-ovs-config.sh
+
+	•	Backs up current OVS configuration
+	•	Restores from backup when needed
+
+Generated Scripts Location
+	•	/usr/local/bin/ovs-scripts/
+Contains scripts for common tasks like monitoring, VLAN changes, port resets, and interface diagnostics.
 
 ⸻
 
-🤝 Contributing
+Contributing
+	•	Fork the repository
+	•	Make changes on a feature branch
+	•	Submit pull requests with clear descriptions
+	•	Ensure scripts pass validation and lint checks
 
-We welcome contributions!
-	•	See CONTRIBUTING.md for guidelines
-	•	Good first issues are labeled in GitHub
-	•	Discussions and feature requests welcome in Issues/Discussions
+License
 
-⸻
-
-🧪 Testing
-	•	Unit tests with make test
-	•	Integration tests with Docker Compose harness
-	•	Benchmarking suite (iperf3, pktgen, TRex) planned for perf datapaths
-
-⸻
-
-📜 License
-
-This project is licensed under Apache 2.0.
-See LICENSE for details.
-
-⸻
-
-🌍 Community & Governance
-	•	Transparent roadmap and planning in GitHub
-	•	Maintainers and contributors listed in MAINTAINERS.md
-	•	Governance model will evolve with community size (Linux Foundation patterns as reference)
-
-⸻
-
-🔮 Long-Term Goals
-	•	VXLAN/GRE tunneling for overlays
-	•	SDN controller integration (ONOS, OpenDaylight)
-	•	Hardware offload (FPGA/NIC support)
-	•	Programmable data plane with P4
-
----
+This project is licensed under the MIT License.
