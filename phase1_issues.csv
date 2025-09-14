@@ -1,0 +1,20 @@
+title,body,labels,milestone
+Finalize ARCHITECTURE.md,"Complete vision, component breakdown, interfaces, roadmap alignment, security & testing strategy.","architecture,phase1",Phase 1 — Foundations
+Add Mermaid diagram,Embed a Mermaid diagram of the architecture in ARCHITECTURE.md.,"architecture,documentation,phase1",Phase 1 — Foundations
+Store PNG/SVG diagrams,Add rendered architecture diagrams to docs/.,"documentation,phase1",Phase 1 — Foundations
+Create PRD_TEMPLATE.md,Add a per-feature PRD template following AIBD-RG guidelines.,"documentation,prd,phase1",Phase 1 — Foundations
+Add PRD stubs for dataplane,Create src/features/dataplane/prd.md stub.,"documentation,prd,phase1",Phase 1 — Foundations
+Add PRD stubs for control plane,Create internal/features/control_plane/prd.md stub.,"documentation,prd,phase1",Phase 1 — Foundations
+Add PRD stubs for management plane,Create internal/features/management/prd.md stub.,"documentation,prd,phase1",Phase 1 — Foundations
+Write DEPENDENCIES.md,"Document Rust + Go module boundaries, rules, and CI enforcement.","documentation,dependencies,phase1",Phase 1 — Foundations
+Write DEVELOPER_SETUP.md,"Add toolchain versions, install commands, and optional Docker setup.","documentation,setup,phase1",Phase 1 — Foundations
+Write TEST_STRATEGY.md,"Map PRD acceptance criteria to unit, integration, and e2e tests.","documentation,testing,phase1",Phase 1 — Foundations
+Write INSTALL.md,Document supported Linux distros and setup instructions.,"documentation,install,phase1",Phase 1 — Foundations
+Update README.md,"Ensure README.md is complete, formatted, and up to date.","documentation,phase1",Phase 1 — Foundations
+Add CONTRIBUTING.md,Write contribution guidelines for the project.,"documentation,contributing,phase1",Phase 1 — Foundations
+Add LICENSE file,Include open-source license (MIT/Apache).,"documentation,license,phase1",Phase 1 — Foundations
+Create Makefile,Add a Makefile with build/test convenience targets.,"ci,build,phase1",Phase 1 — Foundations
+Setup Rust CI workflow,"Add GitHub Actions for cargo fmt, clippy, test, audit, deny, deps.","ci,rust,phase1",Phase 1 — Foundations
+Setup Go CI workflow,"Add GitHub Actions for gofmt, golangci-lint, test, gosec, govulncheck, cycle checks.","ci,go,phase1",Phase 1 — Foundations
+Implement basic packet forwarding,Implement minimal Rust dataplane using Linux networking stack.,"dataplane,rust,prototype,phase1",Phase 1 — Foundations
+Add integration test for forwarding,Add a test to confirm dataplane forwards packets end-to-end.,"testing,dataplane,phase1",Phase 1 — Foundations
