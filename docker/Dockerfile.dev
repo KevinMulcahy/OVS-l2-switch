@@ -1,0 +1,47 @@
+# docker/Dockerfile.dev
+FROM ubuntu:22.04
+
+# Set noninteractive for apt
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Versions (update as needed)
+ENV RUST_VERSION=1.75.0
+ENV GO_VERSION=1.21.0
+
+# Install base dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
+    cmake \
+    curl \
+    wget \
+    git \
+    make \
+    protobuf-compiler \
+    libssl-dev \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# -----------------------------
+# Install Rust
+# -----------------------------
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain ${RUST_VERSION}
+ENV PATH=/root/.cargo/bin:$PATH
+RUN rustup component add rustfmt clippy
+
+# -----------------------------
+# Install Go
+# -----------------------------
+RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz \
+    && rm -rf /usr/local/go \
+    && tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz \
+    && rm go${GO_VERSION}.linux-amd64.tar.gz
+ENV PATH=$PATH:/usr/local/go/bin
+
+# -----------------------------
+# Create workspace dir
+# -----------------------------
+WORKDIR /workspace
+
+# Default shell
+CMD ["/bin/bash"]
