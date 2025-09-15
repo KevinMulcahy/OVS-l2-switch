@@ -1,0 +1,24 @@
+name: Nightly Tests
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # every day at 3am UTC
+
+jobs:
+  fuzzing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        run: rustup update stable && rustup default stable
+      - name: Run fuzz targets
+        run: cargo fuzz run packet_parser_fuzz_target -- -max_total_time=600
+
+  performance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run benchmarks (Rust)
+        run: cargo bench
+      - name: Run benchmarks (Go)
+        run: go test -bench . ./... -benchmem
