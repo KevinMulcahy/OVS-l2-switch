@@ -58,4 +58,3 @@ jobs:
         run: |
           cargo +nightly fuzz run ethernet -- -runs=1000
           cargo +nightly fuzz run vlan -- -runs=1000
-        working-directory: ./fuzz
