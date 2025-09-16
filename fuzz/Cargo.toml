@@ -10,7 +10,7 @@ path = "dummy.rs"
 [dependencies]
 libfuzzer-sys = "0.4"
 
-[dependencies.dataplane]
+[dependencies.dataplane_rs]
 path = "../dataplane-rs"
 
 [[bin]]
