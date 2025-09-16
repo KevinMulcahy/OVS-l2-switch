@@ -4,17 +4,20 @@ version = "0.1.0"
 edition = "2021"
 publish = false
 
+# We don't want to accidentally publish fuzz harnesses
+[lib]
+path = "dummy.rs"   # Required placeholder, since cargo-fuzz expects a lib
+
 [dependencies]
 libfuzzer-sys = "0.4"
 
 [dependencies.dataplane]
-path = "../src"   # Adjust if your dataplane crate has a different path
+# Point this at your dataplane crate — adjust if it's not exactly "src"
+path = "../src"
 
+# Prevent running tests by default in this package
 [workspace]
-members = [
-    "src",      # your dataplane crate
-    "fuzz"      # fuzz harness
-]
+members = []
 
 [[bin]]
 name = "ethernet"
