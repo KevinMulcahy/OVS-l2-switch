@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "src",   # dataplane crate
+    "fuzz"   # fuzz harness crate
+]
+
+# Optional: enforce minimal versions for reproducibility
+resolver = "2"
