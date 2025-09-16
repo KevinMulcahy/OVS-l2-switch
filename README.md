@@ -47,7 +47,7 @@ flowchart TD
 | **User Interfaces** | CLI, Web, Mobile | Switch management, monitoring, configuration visualization                                   |
 | **External Integrations** | Go | Linux Netlink, OVSDB, systemd integration                                                        |
 
-For detailed architecture and module boundaries, see [ARCHITECTURE.md](./ARCHITECTURE.md).
+For detailed architecture and module boundaries, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ---
 
@@ -84,7 +84,7 @@ For detailed architecture and module boundaries, see [ARCHITECTURE.md](./ARCHITE
 - Release v1.0.0  
 - Community engagement and security hardening
 
-For full roadmap, see [Roadmap.md](./Roadmap.md).
+For full roadmap, see [Roadmap.md](Roadmap.md).
 
 ---
 
