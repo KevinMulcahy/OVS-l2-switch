@@ -13,7 +13,7 @@ libfuzzer-sys = "0.4"
 
 [dependencies.dataplane]
 # Point this at your dataplane crate — adjust if it's not exactly "src"
-path = ".."
+path = "../src"
 
 # Prevent running tests by default in this package
 [workspace]
