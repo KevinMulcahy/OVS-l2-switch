@@ -1,8 +1,7 @@
 [workspace]
 members = [
-    "src",   # dataplane crate
-    "fuzz"   # fuzz harness crate
+    "dataplane-rs",
+    "fuzz"
 ]
 
-# Optional: enforce minimal versions for reproducibility
 resolver = "2"
