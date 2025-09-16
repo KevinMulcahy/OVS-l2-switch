@@ -26,3 +26,6 @@ path = "fuzz_targets/ethernet.rs"
 [[bin]]
 name = "vlan"
 path = "fuzz_targets/vlan.rs"
+
+[package.metadata]
+cargo-fuzz = true
