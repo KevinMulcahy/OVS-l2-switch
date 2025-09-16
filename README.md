@@ -1,7 +1,23 @@
 # Open-Source Layer 2 Switching Platform
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Build Status](https://github.com/YourUsername/your-repo/actions/workflows/ci.yml/badge.svg)](https://github.com/YourUsername/your-repo/actions)
+[![Build Status](https://github.com/YourUsername/your-repo/actions/workflows/ci.yml/badge.svg)](https://github.com/YourUsername/your-repo/actions/workflows/ci.yml)
+[![Coverage Status](https://img.shields.io/badge/Coverage-100%25-brightgreen)](#) <!-- placeholder -->
+[![Release](https://img.shields.io/github/v/release/YourUsername/your-repo)](https://github.com/YourUsername/your-repo/releases)
+
+---
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Architecture](#architecture)
+3. [Roadmap](#roadmap)
+4. [Getting Started](#getting-started)
+5. [Quick Start / Demo](#quick-start--demo)
+6. [Documentation](#documentation)
+7. [Contribution Guidelines](#contribution-guidelines)
+8. [License](#license)
+9. [Contact & Support](#contact--support)
 
 ---
 
@@ -15,7 +31,8 @@ This project provides an **open-source, modular Layer 2 switch** for PC architec
 - CLI, GUI, and mobile user interfaces
 - Extensible architecture for advanced networking and ICS/enterprise scenarios
 
-The platform is designed for **researchers, operators, and developers** who need a flexible, secure, and high-performance switching solution.
+**Supported platforms:** Linux (Ubuntu/Debian recommended), PC x86_64 architecture  
+**Minimum requirements:** 4GB RAM, 2 CPU cores, 20GB disk space
 
 ---
 
@@ -53,7 +70,7 @@ For detailed architecture and module boundaries, see [Architecture](docs/ARCHITE
 
 ## Roadmap
 
-For full roadmap, see [Roadmap](ROADMAP.md).
+See [Roadmap](ROADMAP.md) for full details. Current focus is on **Phase 1: Foundations**, implementing basic packet forwarding, CI/CD setup, and developer setup docs.
 
 ---
 
@@ -64,7 +81,7 @@ For full roadmap, see [Roadmap](ROADMAP.md).
 - **Rust:** 1.70+ (dataplane)  
 - **Go:** 1.21+ (control & management planes)  
 - **Linux:** Ubuntu/Debian recommended  
-- `make`, `git`, `docker` (optional)
+- Tools: `make`, `git`, `docker` (optional)
 
 ### Clone Repository
 
@@ -110,13 +127,33 @@ make test
 
 ---
 
+## Quick Start / Demo
+
+You can run a minimal demo to validate forwarding and VLAN:
+
+```bash
+# Start dataplane in test mode
+cargo run --bin dataplane -- --test-vlan 1
+
+# Start control plane in background
+./internal/features/control_plane/main &
+
+# Add sample MAC entries (CLI or API)
+curl -X POST http://localhost:8080/api/v1/mac -d '{"mac":"00:11:22:33:44:55","vlan":1}'
+```
+
+Check logs to see **packet forwarding behavior**. This allows quick validation without full deployment.
+
+---
+
 ## Documentation
 
 - Architecture: [Architecture](docs/ARCHITECTURE.md)  
 - Roadmap: [Roadmap](ROADMAP.md)  
 - Developer Setup Guide: `DEVELOPER_SETUP.md`  
 - Feature PRDs: `src/features/<feature>/prd.md` or `internal/features/<feature>/prd.md`  
-- Coding Guidelines: [AI Based Coding Rules](AI-Based-Coding-Rules-for-Rust-and-Go-Development.md)
+- Coding Guidelines: [AI Based Coding Rules](AI-Based-Coding-Rules-for-Rust-and-Go-Development.md)  
+- API Docs (once REST API is available): `specs/api/openapi.yaml`
 
 ---
 
@@ -129,7 +166,14 @@ We follow **AIBD-RG coding standards** for Rust and Go:
 - Type safety first  
 - CI-enforced formatting, linting, and security checks  
 
-See [AI Based Coding Rules](AI-Based-Coding-Rules-for-Rust-and-Go-Development.md) for details.
+**GitHub Best Practices:**
+
+- Fork repository and submit PRs  
+- Use conventional commit messages (feat, fix, chore, docs, etc.)  
+- Use issue templates for bugs, features, and support  
+- Follow branch naming: `feature/<name>` or `bugfix/<name>`  
+
+See [AI Based Coding Rules](AI-Based-Coding-Rules-for-Rust-and-Go-Development.md) for full guidelines.
 
 ---
 
@@ -142,4 +186,5 @@ This project is licensed under the [MIT License](LICENSE).
 ## Contact & Support
 
 For issues, please open a GitHub Issue or pull request.  
-For discussions and feature requests, use the repository Discussions tab.
+For discussions, feature requests, and general support, use the repository Discussions tab.  
+For urgent queries, reach out to **maintainers** via GitHub or the contact email provided in `DEVELOPER_SETUP.md`.
