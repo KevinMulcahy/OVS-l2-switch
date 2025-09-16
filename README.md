@@ -48,7 +48,6 @@ flowchart TD
 | **External Integrations** | Go | Linux Netlink, OVSDB, systemd integration                                                        |
 
 For detailed architecture and module boundaries, see [ARCHITECTURE.md](ARCHITECTURE.md).
-
 ---
 
 ## Roadmap
