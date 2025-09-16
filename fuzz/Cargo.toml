@@ -1,0 +1,25 @@
+[package]
+name = "dataplane-fuzz"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+libfuzzer-sys = "0.4"
+
+[dependencies.dataplane]
+path = "../src"   # Adjust if your dataplane crate has a different path
+
+[workspace]
+members = [
+    "src",      # your dataplane crate
+    "fuzz"      # fuzz harness
+]
+
+[[bin]]
+name = "ethernet"
+path = "fuzz_targets/ethernet.rs"
+
+[[bin]]
+name = "vlan"
+path = "fuzz_targets/vlan.rs"
