@@ -43,7 +43,7 @@ jobs:
           cargo install cargo-audit --locked
           cargo audit
 
-  fuzz-smoke:
+    fuzz-smoke:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -56,6 +56,6 @@ jobs:
 
       - name: Run fuzz smoke tests
         run: |
-          cd fuzz
           cargo +nightly fuzz run ethernet -- -runs=1000
           cargo +nightly fuzz run vlan -- -runs=1000
+        working-directory: fuzz
