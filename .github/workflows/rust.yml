@@ -43,7 +43,7 @@ jobs:
           cargo install cargo-audit --locked
           cargo audit
 
-    fuzz-smoke:
+  fuzz-smoke:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
