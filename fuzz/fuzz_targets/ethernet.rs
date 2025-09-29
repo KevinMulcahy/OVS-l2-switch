@@ -3,5 +3,7 @@ use libfuzzer_sys::fuzz_target;
 use dataplane_rs::features::forwarding::types::EthernetFrame;
 
 fuzz_target!(|data: &[u8]| {
-    let _ = EthernetFrame::try_from(data);
+    if let Ok(_frame) = EthernetFrame::try_from(data) {
+        // optionally perform property checks
+    }
 });
