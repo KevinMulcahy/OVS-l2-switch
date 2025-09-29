@@ -1,9 +1,6 @@
-#![no_main]
-use libfuzzer_sys::fuzz_target;
 use dataplane_rs::features::forwarding::types::EthernetFrame;
+use std::convert::TryFrom;
 
 fuzz_target!(|data: &[u8]| {
-    if let Ok(_frame) = EthernetFrame::try_from(data) {
-        // optionally perform property checks
-    }
+    let _ = EthernetFrame::try_from(data);
 });
