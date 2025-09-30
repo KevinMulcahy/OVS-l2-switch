@@ -1,26 +1,41 @@
-// src/features/vlan/service.rs
-use super::types::VlanId;
+// dataplane-rs/src/features/vlan/service.rs
 
-/// Service for VLAN tagging/untagging.
+use crate::features::vlan::types::VlanId;
+
 pub struct VlanService;
 
-impl Default for VlanService {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl VlanService {
-    pub fn new() -> Self {
-        VlanService
+    /// Tags a packet with the given VLAN ID
+    ///
+    /// # Arguments
+    /// * `packet` - Mutable slice of the packet bytes
+    /// * `vlan` - VLAN ID to insert
+    pub fn tag_packet(&self, packet: &mut [u8], vlan: VlanId) {
+        // Example: prepend VLAN tag (implementation depends on your VLAN format)
+        // Note: packet must have enough capacity to hold VLAN tag
+        if packet.len() < 4 {
+            return; // or handle error
+        }
+
+        // Example: insert VLAN ID at bytes 12-13 (Ethernet header)
+        packet[12] = (vlan.0 >> 8) as u8;
+        packet[13] = vlan.0 as u8;
     }
 
-    pub fn tag_packet(&self, _packet: &mut Vec<u8>, _vlan: VlanId) {
-        // TODO: implement tagging
-    }
+    /// Removes VLAN tag from a packet
+    ///
+    /// # Arguments
+    /// * `packet` - Mutable slice of the packet bytes
+    ///
+    /// # Returns
+    /// * `Option<VlanId>` - Extracted VLAN ID if present
+    pub fn untag_packet(&self, packet: &mut [u8]) -> Option<VlanId> {
+        if packet.len() < 14 {
+            return None;
+        }
 
-    pub fn untag_packet(&self, _packet: &mut Vec<u8>) -> Option<VlanId> {
-        // TODO: implement untagging
-        None
+        // Example: read VLAN ID from bytes 12-13
+        let vlan_id = ((packet[12] as u16) << 8) | packet[13] as u16;
+        Some(VlanId(vlan_id))
     }
 }
