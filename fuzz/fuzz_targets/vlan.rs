@@ -5,5 +5,5 @@ use libfuzzer_sys::fuzz_target;
 
 fuzz_target!(|data: &[u8]| {
     // construct a VLAN tag from the first byte
-    let _tag = VlanTag(data.get(0).copied().unwrap_or(0) as u16);
+    let _tag = VlanTag(data.first().copied().unwrap_or(0) as u16);
 });
