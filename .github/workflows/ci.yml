@@ -63,8 +63,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Install Docker Compose v2 (CLI plugin)
+      - name: Install Docker Compose
+        run: |
+          mkdir -p ~/.docker/cli-plugins/
+          curl -SL https://github.com/docker/compose/releases/download/v2.29.1/docker-compose-linux-x86_64 \
+            -o ~/.docker/cli-plugins/docker-compose
+          chmod +x ~/.docker/cli-plugins/docker-compose
+          docker compose version
+
       - name: Build test harness
-        run: docker-compose -f docker-compose.test.yml build
+        run: docker compose -f docker-compose.test.yml build
 
       - name: Run integration tests
-        run: docker-compose -f docker-compose.test.yml up --exit-code-from tests
+        run: docker compose -f docker-compose.test.yml up --exit-code-from tests
+
