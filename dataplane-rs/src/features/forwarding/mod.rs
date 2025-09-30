@@ -1,4 +1,4 @@
 // Public API surface for forwarding feature
-pub mod types;
-pub mod service;
 pub mod internal;
+pub mod service;
+pub mod types;

@@ -6,4 +6,3 @@ pub use vlan::{VlanId, VlanTag};
 
 pub mod ethernet_frame;
 pub use ethernet_frame::EthernetFrame;
-

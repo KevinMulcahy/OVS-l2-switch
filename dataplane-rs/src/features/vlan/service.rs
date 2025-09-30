@@ -4,6 +4,12 @@ use super::types::VlanId;
 /// Service for VLAN tagging/untagging.
 pub struct VlanService;
 
+impl Default for VlanService {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl VlanService {
     pub fn new() -> Self {
         VlanService

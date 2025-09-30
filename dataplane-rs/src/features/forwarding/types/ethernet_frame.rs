@@ -1,5 +1,5 @@
-use std::convert::TryFrom;
 use crate::shared::error::AppError;
+use std::convert::TryFrom;
 
 /// Minimal representation of an Ethernet frame.
 /// For fuzzing and basic parsing; will be extended with
