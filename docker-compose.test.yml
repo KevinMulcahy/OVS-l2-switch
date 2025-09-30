@@ -3,7 +3,7 @@ services:
     build:
       context: ./dataplane-rs
     container_name: dataplane
-    command: ["./target/release/dataplane-rs"]
+    # use the CMD from Dockerfile (do not override)
     networks:
       - switchnet
 
