@@ -1,3 +1,6 @@
+#![no_main]
+
+use libfuzzer_sys::fuzz_target;
 use dataplane_rs::features::forwarding::types::EthernetFrame;
 use std::convert::TryFrom;
 
