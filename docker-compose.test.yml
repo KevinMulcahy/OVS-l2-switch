@@ -20,13 +20,14 @@ services:
 
   tests:
     build:
-      context: ./tests
+      context: ./tests/integration
     container_name: integration-tests
-    networks:
-      - switchnet
     depends_on:
       - dataplane
       - controlplane
+    networks:
+      - switchnet
+    command: ["./test.sh"]
 
 networks:
   switchnet:
