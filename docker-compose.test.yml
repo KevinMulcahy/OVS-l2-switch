@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  dataplane:
+    build:
+      context: ./dataplane-rs
+    container_name: dataplane
+    command: ["./target/release/dataplane-rs"]
+    networks:
+      - switchnet
+
+  controlplane:
+    build:
+      context: ./control-plane-go
+    container_name: controlplane
+    command: ["./switchapi"]   # expose health endpoint
+    ports:
+      - "8080:8080"
+    networks:
+      - switchnet
+    depends_on:
+      - dataplane
+
+  tests:
+    build:
+      context: ./tests
+    container_name: integration-tests
+    networks:
+      - switchnet
+    depends_on:
+      - dataplane
+      - controlplane
+
+networks:
+  switchnet:
+    driver: bridge
