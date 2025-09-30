@@ -1,5 +1,4 @@
 #![no_main]
-
 #![no_main]
 
 use dataplane_rs::features::forwarding::types::EthernetFrame;
