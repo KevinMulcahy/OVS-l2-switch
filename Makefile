@@ -1,31 +1,53 @@
-.PHONY: all build test fmt lint clean
+# Makefile for OVS-L2-Switch project
+# Convenience targets for Rust dataplane and Go control plane
 
+.PHONY: all build test clean fmt lint security
+
+# --- Global targets ---
 all: build
+build: build-rust build-go
+test: test-rust test-go
+fmt: fmt-rust fmt-go
+lint: lint-rust lint-go
+security: security-rust security-go
+clean: clean-rust clean-go
 
-build:
-	@echo "Building dataplane (Rust)..."
-	cd dataplane-rs && cargo build --release
-	@echo "Building control plane (Go)..."
-	cd control-plane-go && go build ./...
+# --- Rust (Dataplane) ---
+build-rust:
+	cargo build --workspace --all-features
 
-test:
-	@echo "Testing dataplane (Rust)..."
-	cd dataplane-rs && cargo test
-	@echo "Testing control plane (Go)..."
-	cd control-plane-go && go test ./...
+test-rust:
+	cargo test --workspace --all-features --verbose
 
-fmt:
-	@echo "Formatting Rust..."
-	cd dataplane-rs && cargo fmt || true
-	@echo "Formatting Go..."
-	cd control-plane-go && go fmt ./... || true
+fmt-rust:
+	cargo fmt --all
 
-lint:
-	@echo "Linting Rust (clippy)..."
-	cd dataplane-rs && cargo clippy -- -D warnings || true
-	@echo "Linting Go (golangci-lint if installed)..."
-	cd control-plane-go && golangci-lint run || true
+lint-rust:
+	cargo clippy --all-targets --all-features -- -D warnings
 
-clean:
-	cd dataplane-rs && cargo clean
-	cd control-plane-go && rm -f ./cmd/switchapi ./cmd/switchctl || true
+security-rust:
+	cargo audit || true
+	cargo deny check || true
+
+clean-rust:
+	cargo clean
+
+# --- Go (Control Plane / Management Plane) ---
+build-go:
+	go build ./...
+
+test-go:
+	go test -race -coverprofile=coverage.out ./...
+
+fmt-go:
+	go fmt ./...
+
+lint-go:
+	golangci-lint run ./...
+
+security-go:
+	gosec ./...
+	govulncheck ./...
+
+clean-go:
+	go clean -testcache
