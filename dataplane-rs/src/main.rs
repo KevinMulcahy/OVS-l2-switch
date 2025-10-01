@@ -1,4 +1,7 @@
-fn main() {
-    println!("dataplane-rs: dataplane stub running (no-op)");
-    // TODO: replace this stub with AF_PACKET/TAP packet I/O and MAC learning
+use crate::features::forwarding::service::ForwardingService;
+
+fn main() -> anyhow::Result<()> {
+    // Forward packets from eth0 → eth1
+    ForwardingService::start_forwarding("eth0", "eth1")?;
+    Ok(())
 }
