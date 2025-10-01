@@ -8,10 +8,9 @@ services:
     container_name: dataplane
     networks:
       - switchnet
-    # The Dockerfile for dataplane should define CMD ["dataplane_rs"]
-    # If not, you can uncomment the next line:
-    # command: ["dataplane_rs"]
-
+    # Keep container alive until real dataplane code is implemented
+    command: ["sh", "-c", "echo dataplane stub container running && tail -f /dev/null"]  
+      
   controlplane:
     build:
       context: ./control-plane-go
