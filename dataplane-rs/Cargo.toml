@@ -7,3 +7,5 @@ edition = "2021"
 path = "src/lib.rs"
 
 [dependencies]
+anyhow = "1.0"
+nix = "0.27"  # latest compatible
