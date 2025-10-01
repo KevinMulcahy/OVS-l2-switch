@@ -1,0 +1,26 @@
+# CODEOWNERS
+# This file controls automatic reviewer assignment for PRs.
+# Organized by module (dataplane, control plane, management).
+# Currently all owned by @KevinMulcahy.
+
+# Root files
+/OWNERS.md          @KevinMulcahy
+/ARCHITECTURE.md    @KevinMulcahy
+/Roadmap.md         @KevinMulcahy
+
+# Dataplane (Rust)
+# Applies to all code under src/ and fuzz/
+src/**              @KevinMulcahy
+fuzz/**             @KevinMulcahy
+
+# Control Plane (Go)
+# Applies to control plane code in Go
+control-plane/**    @KevinMulcahy
+
+# Management Plane (Go)
+# Applies to management APIs and features
+management/**       @KevinMulcahy
+
+# Tests and CI
+tests/**            @KevinMulcahy
+.github/**          @KevinMulcahy
