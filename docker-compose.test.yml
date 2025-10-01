@@ -1,11 +1,18 @@
+version: "3.9"
+
+networks:
+  switchnet:
+
 services:
   dataplane:
     build:
       context: ./dataplane-rs
     container_name: dataplane
-    # use the CMD from Dockerfile (do not override)
     networks:
       - switchnet
+    # The Dockerfile for dataplane should define CMD ["dataplane_rs"]
+    # If not, you can uncomment the next line:
+    # command: ["dataplane_rs"]
 
   controlplane:
     build:
@@ -17,6 +24,9 @@ services:
       - switchnet
     depends_on:
       - dataplane
+    # The Dockerfile should define CMD ["switchapi"]
+    # If not, uncomment:
+    # command: ["switchapi"]
 
   tests:
     build:
@@ -27,8 +37,4 @@ services:
       - controlplane
     networks:
       - switchnet
-    command: ["./test.sh"]
-
-networks:
-  switchnet:
-    driver: bridge
+    # Command comes from tests/integration/Dockerfile (CMD ["./test.sh"])
