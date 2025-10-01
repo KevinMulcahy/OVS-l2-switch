@@ -2,8 +2,6 @@
 set -euo pipefail
 
 echo "Starting integration tests..."
-
-# Give services time to boot
 sleep 3
 
 # --- Control plane health check ---
@@ -15,13 +13,14 @@ else
   exit 1
 fi
 
-# --- Dataplane stub check ---
-echo "Checking dataplane process..."
-if docker ps | grep -q dataplane; then
-  echo "✅ Dataplane container is running"
+# --- Dataplane liveness check via network ping ---
+echo "Checking dataplane container..."
+if ping -c1 dataplane >/dev/null 2>&1; then
+  echo "✅ Dataplane container is reachable on the network"
 else
-  echo "❌ Dataplane container is not running"
+  echo "❌ Dataplane container not reachable"
   exit 1
 fi
 
 echo "All integration tests passed!"
+
