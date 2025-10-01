@@ -1,8 +1,12 @@
+// src/features/forwarding/types/mod.rs
+
+pub mod forwarding_entry;
 pub mod mac_address;
-pub use mac_address::MacAddress;
-
 pub mod vlan;
-pub use vlan::{VlanId, VlanTag};
+pub mod other_type; // add more as needed
 
-pub mod ethernet_frame;
-pub use ethernet_frame::EthernetFrame;
+// Re-export for easier access
+pub use forwarding_entry::ForwardingEntry;
+pub use mac_address::MacAddress;
+pub use vlan::Vlan;
+pub use other_type::OtherType; // add more as needed
