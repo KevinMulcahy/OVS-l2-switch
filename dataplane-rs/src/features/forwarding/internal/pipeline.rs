@@ -1,6 +1,6 @@
 use crate::features::forwarding::types::NetIf;
 use anyhow::Result;
-use nix::sys::socket::{socket, AddressFamily, SockFlag, SockType, recv, send, MsgFlags};
+use nix::sys::socket::{recv, send, socket, AddressFamily, MsgFlags, SockFlag, SockType};
 use std::os::unix::io::AsRawFd; // ✅ needed to convert OwnedFd → RawFd
 
 pub struct Pipeline {
@@ -18,23 +18,24 @@ impl Pipeline {
         let mut buf = [0u8; 1500];
 
         // Open sockets (example: raw packet sockets for input/output)
-        let in_fd = socket(AddressFamily::Inet, SockType::Datagram, SockFlag::empty(), None)?;
-        let out_fd = socket(AddressFamily::Inet, SockType::Datagram, SockFlag::empty(), None)?;
+        let in_fd = socket(
+            AddressFamily::Inet,
+            SockType::Datagram,
+            SockFlag::empty(),
+            None,
+        )?;
+        let out_fd = socket(
+            AddressFamily::Inet,
+            SockType::Datagram,
+            SockFlag::empty(),
+            None,
+        )?;
 
         loop {
             // ✅ Use `.as_raw_fd()` to convert OwnedFd → RawFd (i32)
-            let n = recv(
-                in_fd.as_raw_fd(),
-                &mut buf,
-                MsgFlags::empty(),
-            )?;
+            let n = recv(in_fd.as_raw_fd(), &mut buf, MsgFlags::empty())?;
 
-            send(
-                out_fd.as_raw_fd(),
-                &buf[..n],
-                MsgFlags::empty(),
-            )?;
+            send(out_fd.as_raw_fd(), &buf[..n], MsgFlags::empty())?;
         }
     }
 }
-

@@ -1,5 +1,5 @@
-use crate::features::forwarding::types::{NetIf, ForwardingEntry, MacAddress, VlanId};
 use crate::features::forwarding::internal::pipeline::Pipeline;
+use crate::features::forwarding::types::{ForwardingEntry, MacAddress, NetIf, VlanId};
 use anyhow::Result;
 
 pub struct ForwardingService;
@@ -15,11 +15,7 @@ impl ForwardingService {
         let out_if = NetIf::new(output, 1);
 
         // Example ForwardingEntry just for testing wiring
-        let _entry = ForwardingEntry::new(
-            MacAddress([0, 1, 2, 3, 4, 5]),
-            VlanId(1),
-            out_if.index,
-        );
+        let _entry = ForwardingEntry::new(MacAddress([0, 1, 2, 3, 4, 5]), VlanId(1), out_if.index);
 
         println!("Pipeline setup: {:?} -> {:?}", in_if, out_if);
         Ok(())
@@ -32,7 +28,9 @@ mod tests {
     #[test]
     fn test_setup_pipeline_creates_pipeline() {
         let svc = ForwardingService::new();
-        let pipeline = svc.setup_pipeline("eth0", "eth1").expect("pipeline should build");
+        let pipeline = svc
+            .setup_pipeline("eth0", "eth1")
+            .expect("pipeline should build");
 
         assert_eq!(pipeline.input.name, "eth0");
         assert_eq!(pipeline.input.index, 0);
