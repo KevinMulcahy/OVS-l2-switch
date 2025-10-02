@@ -3,7 +3,7 @@ FROM debian:bookworm-slim
 # Install necessary tools
 RUN apt-get update && apt-get install -y \
     curl \
-    netcat \
+    netcat-openbsd \
     bash \
     && rm -rf /var/lib/apt/lists/*
 
