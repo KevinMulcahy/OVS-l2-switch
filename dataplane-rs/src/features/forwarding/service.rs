@@ -25,4 +25,18 @@ impl ForwardingService {
         Ok(())
     }
 }
+#[cfg(test)]
+mod tests {
+    use super::*;
 
+    #[test]
+    fn test_setup_pipeline_creates_pipeline() {
+        let svc = ForwardingService::new();
+        let pipeline = svc.setup_pipeline("eth0", "eth1").expect("pipeline should build");
+
+        assert_eq!(pipeline.input.name, "eth0");
+        assert_eq!(pipeline.input.index, 0);
+        assert_eq!(pipeline.output.name, "eth1");
+        assert_eq!(pipeline.output.index, 1);
+    }
+}
