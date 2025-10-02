@@ -9,4 +9,3 @@ pub use forwarding_entry::ForwardingEntry;
 pub use mac_address::MacAddress;
 pub use net_if::NetIf;
 pub use vlan::{VlanId, VlanTag};
-
