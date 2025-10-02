@@ -1,37 +1,57 @@
 networks:
   switchnet:
+    driver: bridge
 
 services:
   dataplane:
     build:
       context: ./dataplane-rs
+      dockerfile: Dockerfile
     container_name: dataplane
     networks:
       - switchnet
-    # Keep container alive until real dataplane code is implemented
-    command: ["sh", "-c", "echo dataplane stub container running && tail -f /dev/null"]  
-      
+    ports:
+      - "50051:50051"  # Adjust if your dataplane uses a different port
+    healthcheck:
+      test: ["CMD", "nc", "-z", "0.0.0.0", "50051"]
+      interval: 2s
+      retries: 10
+      start_period: 5s
+      timeout: 2s
+
   controlplane:
     build:
       context: ./control-plane-go
+      dockerfile: Dockerfile
     container_name: controlplane
+    networks:
+      - switchnet
     ports:
-      - "8080:8080"
-    networks:
-      - switchnet
-    depends_on:
-      - dataplane
-    # The Dockerfile should define CMD ["switchapi"]
-    # If not, uncomment:
-    # command: ["switchapi"]
+      - "8080:8080"  # REST API port
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 2s
+      retries: 10
+      start_period: 5s
+      timeout: 2s
 
-  tests:
+  integration-tests:
     build:
-      context: ./tests/integration
+      context: ./integration-tests
+      dockerfile: Dockerfile
     container_name: integration-tests
-    depends_on:
-      - dataplane
-      - controlplane
     networks:
       - switchnet
-    # Command comes from tests/integration/Dockerfile (CMD ["./test.sh"])
+    depends_on:
+      dataplane:
+        condition: service_healthy
+      controlplane:
+        condition: service_healthy
+    environment:
+      DATAPLANE_HOST: dataplane
+      DATAPLANE_PORT: 50051
+      CONTROLPLANE_HOST: controlplane
+      CONTROLPLANE_PORT: 8080
+    command: ["./run_tests.sh"]  # Replace with your actual test runner script
+
+    
