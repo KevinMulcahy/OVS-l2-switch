@@ -1,38 +1,40 @@
-// src/features/forwarding/internal/pipeline.rs
 use crate::features::forwarding::types::NetIf;
-use nix::sys::socket::{socket, AddressFamily, SockFlag, SockType, recv, send};
-use std::io;
+use anyhow::Result;
+use nix::sys::socket::{socket, AddressFamily, SockFlag, SockType, recv, send, MsgFlags};
+use std::os::unix::io::AsRawFd; // ✅ needed to convert OwnedFd → RawFd
 
-/// Minimal forwarder using raw Linux sockets
-pub struct Forwarder {
+pub struct Pipeline {
     pub input: NetIf,
     pub output: NetIf,
 }
 
-impl Forwarder {
+impl Pipeline {
     pub fn new(input: NetIf, output: NetIf) -> Self {
         Self { input, output }
     }
 
-    pub fn run(&self) -> io::Result<()> {
-        // Open raw sockets (promiscuous mode)
-        let in_fd = socket(AddressFamily::Packet, SockType::Raw, SockFlag::empty(), None)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
-        let out_fd = socket(AddressFamily::Packet, SockType::Raw, SockFlag::empty(), None)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+    pub fn run(&self) -> Result<()> {
+        // Example buffer for forwarding packets
+        let mut buf = [0u8; 1500];
 
-        let mut buf = [0u8; 65536];
+        // Open sockets (example: raw packet sockets for input/output)
+        let in_fd = socket(AddressFamily::Inet, SockType::Datagram, SockFlag::empty(), None)?;
+        let out_fd = socket(AddressFamily::Inet, SockType::Datagram, SockFlag::empty(), None)?;
 
         loop {
-            // Receive packet on input
-            let n = recv(in_fd, &mut buf, nix::sys::socket::MsgFlags::empty())
-                .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+            // ✅ Use `.as_raw_fd()` to convert OwnedFd → RawFd (i32)
+            let n = recv(
+                in_fd.as_raw_fd(),
+                &mut buf,
+                MsgFlags::empty(),
+            )?;
 
-            // Forward to output
-            send(out_fd, &buf[..n], nix::sys::socket::MsgFlags::empty())
-                .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+            send(
+                out_fd.as_raw_fd(),
+                &buf[..n],
+                MsgFlags::empty(),
+            )?;
         }
-
-        // Ok(())  // unreachable, loop runs indefinitely
     }
 }
+
