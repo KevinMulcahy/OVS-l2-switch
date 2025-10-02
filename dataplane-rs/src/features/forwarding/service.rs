@@ -1,19 +1,27 @@
-// src/features/forwarding/service.rs
-use crate::features::forwarding::internal::pipeline::Forwarder;
-use crate::features::forwarding::types::NetIf;
+use crate::features::forwarding::types::{NetIf, ForwardingEntry, MacAddress, VlanId};
 use anyhow::Result;
 
-/// Public API for forwarding
 pub struct ForwardingService;
 
 impl ForwardingService {
-    /// Start basic forwarding between two interfaces
-    pub fn start_forwarding(input: &str, output: &str) -> Result<()> {
-        let fwd = Forwarder::new(
-            NetIf { name: input.to_string() },
-            NetIf { name: output.to_string() },
+    pub fn new() -> Self {
+        Self
+    }
+
+    pub fn setup_pipeline(&self, input: &str, output: &str) -> Result<()> {
+        // ✅ Use the constructor instead of raw struct literal
+        let in_if = NetIf::new(input, 0);
+        let out_if = NetIf::new(output, 1);
+
+        // Example ForwardingEntry just for testing wiring
+        let _entry = ForwardingEntry::new(
+            MacAddress([0, 1, 2, 3, 4, 5]),
+            VlanId(1),
+            out_if.index,
         );
-        fwd.run()?;
+
+        println!("Pipeline setup: {:?} -> {:?}", in_if, out_if);
         Ok(())
     }
 }
+
