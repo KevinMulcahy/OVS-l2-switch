@@ -4,6 +4,12 @@ use anyhow::Result;
 
 pub struct ForwardingService;
 
+impl Default for ForwardingService {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ForwardingService {
     pub fn new() -> Self {
         ForwardingService
