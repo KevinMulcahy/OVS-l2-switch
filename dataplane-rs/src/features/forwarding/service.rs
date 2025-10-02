@@ -1,5 +1,5 @@
-use crate::features::forwarding::types::{ForwardingEntry, MacAddress, NetIf, VlanId};
 use crate::features::forwarding::internal::pipeline::Pipeline;
+use crate::features::forwarding::types::{ForwardingEntry, MacAddress, NetIf, VlanId};
 use anyhow::Result;
 
 pub struct ForwardingService;
