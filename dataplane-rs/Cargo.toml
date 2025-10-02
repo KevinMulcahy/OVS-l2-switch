@@ -7,3 +7,5 @@ edition = "2021"
 path = "src/lib.rs"
 
 [dependencies]
+nix = { version = "0.27.1", features = ["socket"] }
+anyhow = "1.0"

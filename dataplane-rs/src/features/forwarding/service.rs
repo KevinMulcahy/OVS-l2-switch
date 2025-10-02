@@ -1,21 +1,42 @@
-// src/features/forwarding/service.rs
+use crate::features::forwarding::types::{NetIf, ForwardingEntry, MacAddress, VlanId};
+use crate::features::forwarding::internal::pipeline::Pipeline;
+use anyhow::Result;
 
-/// Service layer for forwarding feature.
-/// Handles MAC learning and packet forwarding logic.
 pub struct ForwardingService;
-
-impl Default for ForwardingService {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 impl ForwardingService {
     pub fn new() -> Self {
-        ForwardingService
+        Self
     }
 
-    pub fn process_packet(&self, _packet: &[u8]) {
-        // TODO: implement forwarding logic
+    pub fn setup_pipeline(&self, input: &str, output: &str) -> Result<()> {
+        // ✅ Use the constructor instead of raw struct literal
+        let in_if = NetIf::new(input, 0);
+        let out_if = NetIf::new(output, 1);
+
+        // Example ForwardingEntry just for testing wiring
+        let _entry = ForwardingEntry::new(
+            MacAddress([0, 1, 2, 3, 4, 5]),
+            VlanId(1),
+            out_if.index,
+        );
+
+        println!("Pipeline setup: {:?} -> {:?}", in_if, out_if);
+        Ok(())
+    }
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_setup_pipeline_creates_pipeline() {
+        let svc = ForwardingService::new();
+        let pipeline = svc.setup_pipeline("eth0", "eth1").expect("pipeline should build");
+
+        assert_eq!(pipeline.input.name, "eth0");
+        assert_eq!(pipeline.input.index, 0);
+        assert_eq!(pipeline.output.name, "eth1");
+        assert_eq!(pipeline.output.index, 1);
     }
 }
