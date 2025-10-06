@@ -8,6 +8,7 @@ use std::{
     thread,
     time::Duration,
 };
+
 use signal_hook::{consts::TERM_SIGNALS, iterator::Signals};
 
 fn main() {
