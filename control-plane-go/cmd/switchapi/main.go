@@ -1,23 +1,62 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
+// healthResponse defines the JSON structure for /healthz responses.
+type healthResponse struct {
+	Status string `json:"status"`
+}
+
 func main() {
-	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	log.Println("switchapi: listening on :8080")
+
+	mux := http.NewServeMux()
+
+	// Health endpoint for Docker/CI checks.
+	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		if _, err := w.Write([]byte(`{"status":"ok"}`)); err != nil {
-			log.Printf("failed to write health response: %v", err)
-			http.Error(w, "failed to write response", http.StatusInternalServerError)
-			return
-		}
+		_ = json.NewEncoder(w).Encode(healthResponse{Status: "ok"})
 	})
 
-	addr := ":8080"
-	log.Printf("switchapi: listening on %s\n", addr)
-	if err := http.ListenAndServe(addr, nil); err != nil {
-		log.Fatalf("server failed: %v", err)
+	// Basic root endpoint.
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("controlplane OK\n"))
+	})
+
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: mux,
 	}
+
+	// Run server in background so we can capture shutdown signals.
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("server error: %v", err)
+		}
+	}()
+
+	// Wait for termination signals.
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Println("controlplane: shutting down gracefully...")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatalf("controlplane: forced to shutdown: %v", err)
+	}
+
+	log.Println("controlplane: stopped")
 }
