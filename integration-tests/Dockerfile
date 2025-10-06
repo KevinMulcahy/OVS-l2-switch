@@ -1,6 +1,5 @@
 FROM debian:bookworm-slim
 
-# Install necessary tools
 RUN apt-get update && apt-get install -y \
     curl \
     netcat-openbsd \
@@ -10,5 +9,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 COPY . .
 
-# Default command (replace with your actual test runner)
+# ✅ Ensure test runner is executable
+RUN chmod +x ./run_tests.sh
+
 CMD ["./run_tests.sh"]
