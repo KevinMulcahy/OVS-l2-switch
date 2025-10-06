@@ -3,9 +3,16 @@ name = "dataplane_rs"
 version = "0.1.0"
 edition = "2021"
 
+# Library target (Phase 1 core module structure)
 [lib]
 path = "src/lib.rs"
 
 [dependencies]
+# POSIX-safe systems programming (used for socket and FD management)
 nix = { version = "0.27.1", features = ["socket"] }
+
+# Standardized error handling per AIBD-RG §7.2
 anyhow = "1.0"
+
+# Signal-safe termination handler for graceful shutdowns (AIBD-RG §7.4)
+signal-hook = "0.3"
