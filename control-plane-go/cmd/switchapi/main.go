@@ -24,13 +24,18 @@ func main() {
 	// Health endpoint for Docker/CI checks.
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(healthResponse{Status: "ok"})
+		if err := json.NewEncoder(w).Encode(healthResponse{Status: "ok"}); err != nil {
+			http.Error(w, "failed to encode health response", http.StatusInternalServerError)
+			return
+		}
 	})
 
 	// Basic root endpoint.
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("controlplane OK\n"))
+		if _, err := w.Write([]byte("controlplane OK\n")); err != nil {
+			log.Printf("error writing response: %v", err)
+		}
 	})
 
 	srv := &http.Server{
