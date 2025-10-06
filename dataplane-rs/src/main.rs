@@ -32,10 +32,8 @@ fn main() {
     thread::spawn(|| {
         let listener = TcpListener::bind("0.0.0.0:8080").expect("Failed to bind healthcheck port");
         println!("Dataplane healthcheck server listening on port 8080");
-        for stream in listener.incoming() {
-            if let Ok(mut stream) = stream {
-                let _ = stream.write_all(b"OK\n");
-            }
+        for mut stream in listener.incoming().flatten() {
+            let _ = stream.write_all(b"OK\n");
         }
     });
 
