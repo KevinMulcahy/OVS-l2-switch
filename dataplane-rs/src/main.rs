@@ -1,3 +1,10 @@
+#![forbid(unsafe_code)]
+
+fn main() {
+    println!("Starting dataplane...");
+    // existing initialization
+}
+
 use dataplane_rs::features::forwarding::service::ForwardingService;
 
 fn main() {
