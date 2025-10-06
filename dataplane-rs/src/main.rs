@@ -19,7 +19,7 @@ fn main() {
     let running = Arc::new(AtomicBool::new(true));
     let r = Arc::clone(&running);
 
-    // Graceful shutdown handler
+    // Graceful shutdown
     thread::spawn(move || {
         let mut signals = Signals::new(TERM_SIGNALS).expect("Failed to set up signal handler");
         if let Some(_sig) = signals.forever().next() {
@@ -28,7 +28,7 @@ fn main() {
         }
     });
 
-    // HTTP-compatible healthcheck server
+    // HTTP health server
     thread::spawn(|| {
         let listener = TcpListener::bind("0.0.0.0:8080").expect("Failed to bind healthcheck port");
         println!("Dataplane HTTP healthcheck server listening on port 8080");
@@ -36,14 +36,20 @@ fn main() {
         for mut stream in listener.incoming().flatten() {
             let mut buffer = [0; 512];
             let _ = stream.read(&mut buffer);
-            let response = "HTTP/1.1 200 OK\r\nContent-Length: 3\r\n\r\nOK\n";
+            let response = concat!(
+                "HTTP/1.1 200 OK\r\n",
+                "Content-Type: text/plain\r\n",
+                "Content-Length: 3\r\n",
+                "Connection: close\r\n",
+                "\r\n",
+                "OK\n"
+            );
             let _ = stream.write_all(response.as_bytes());
         }
     });
 
     println!("Dataplane service started successfully.");
 
-    // Main operational loop
     while running.load(Ordering::SeqCst) {
         thread::sleep(Duration::from_secs(10));
     }
