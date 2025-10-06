@@ -1,8 +1,17 @@
+# ──────────────────────────────────────────────
+# Network Definition
+# ──────────────────────────────────────────────
 networks:
   switchnet:
     driver: bridge
 
+# ──────────────────────────────────────────────
+# Service Definitions
+# ──────────────────────────────────────────────
 services:
+  # ────────────────
+  # Dataplane (Rust)
+  # ────────────────
   dataplane:
     build:
       context: ./dataplane-rs
@@ -11,14 +20,23 @@ services:
     networks:
       - switchnet
     ports:
-      - "50051:50051"  # Adjust if your dataplane uses a different port
+      - "50051:50051"  # gRPC or control channel port
     healthcheck:
       test: ["CMD", "nc", "-z", "0.0.0.0", "50051"]
       interval: 2s
       retries: 10
       start_period: 5s
       timeout: 2s
+    # Optional resource limits for CI consistency
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
 
+  # ────────────────
+  # Controlplane (Go)
+  # ────────────────
   controlplane:
     build:
       context: ./control-plane-go
@@ -27,14 +45,23 @@ services:
     networks:
       - switchnet
     ports:
-      - "8080:8080"  # REST API port
+      - "8080:8080"  # REST API / healthz port
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
       interval: 2s
       retries: 10
       start_period: 5s
       timeout: 2s
+    depends_on:
+      dataplane:
+        condition: service_healthy
+    environment:
+      # Example for configuration — expand later as needed
+      SWITCH_LOG_LEVEL: info
 
+  # ───────────────────────────────
+  # Integration Test Runner (Go)
+  # ───────────────────────────────
   integration-tests:
     build:
       context: ./integration-tests
@@ -53,5 +80,5 @@ services:
       CONTROLPLANE_HOST: controlplane
       CONTROLPLANE_PORT: 8080
     command: ["./run_tests.sh"]  # Replace with your actual test runner script
-
-    
+    # Prevent container auto-exit before healthchecks stabilize
+    restart: "no"
