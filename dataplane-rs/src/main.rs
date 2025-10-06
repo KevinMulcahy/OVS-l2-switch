@@ -22,10 +22,9 @@ fn main() {
     // Spawn a thread to listen for termination signals.
     thread::spawn(move || {
         let mut signals = Signals::new(TERM_SIGNALS).expect("Failed to set up signal handler");
-        for _sig in signals.forever() {
+        if let Some(_sig) = signals.forever().next() {
             println!("Received termination signal, shutting down dataplane...");
             r.store(false, Ordering::SeqCst);
-            break;
         }
     });
 
