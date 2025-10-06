@@ -1,18 +1,38 @@
 // Enforce Rust safety rule per AIBD-RG Section 7.1
 #![forbid(unsafe_code)]
 
-use std::process;
+use std::{
+    process,
+    sync::atomic::{AtomicBool, Ordering},
+    sync::Arc,
+    thread,
+    time::Duration,
+};
+use signal_hook::{consts::TERM_SIGNALS, iterator::Signals};
 
 fn main() {
     println!("Starting dataplane...");
-
-    // TODO: initialize forwarding pipeline, interfaces, etc.
-    //       Phase 1 requires basic forwarding only.
-    //       This placeholder ensures clean compilation and CI pass.
-
-    // Example placeholder for startup success message:
     println!("Dataplane service started successfully.");
 
-    // Exit cleanly (0) so Docker sees it as healthy.
+    // Setup graceful shutdown signal handling.
+    let running = Arc::new(AtomicBool::new(true));
+    let r = Arc::clone(&running);
+
+    // Spawn a thread to listen for termination signals.
+    thread::spawn(move || {
+        let mut signals = Signals::new(TERM_SIGNALS).expect("Failed to set up signal handler");
+        for _sig in signals.forever() {
+            println!("Received termination signal, shutting down dataplane...");
+            r.store(false, Ordering::SeqCst);
+            break;
+        }
+    });
+
+    // Main runtime loop: keep service alive until signal received.
+    while running.load(Ordering::SeqCst) {
+        thread::sleep(Duration::from_secs(10));
+    }
+
+    println!("Dataplane stopped cleanly.");
     process::exit(0);
 }
