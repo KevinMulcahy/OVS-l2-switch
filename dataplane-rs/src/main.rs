@@ -2,7 +2,7 @@
 #![forbid(unsafe_code)]
 
 use std::{
-    io::Write,
+    io::{Read, Write},
     net::TcpListener,
     process,
     sync::atomic::{AtomicBool, Ordering},
@@ -28,18 +28,22 @@ fn main() {
         }
     });
 
-    // Simple TCP health server for Docker healthcheck
+    // HTTP-compatible healthcheck server
     thread::spawn(|| {
         let listener = TcpListener::bind("0.0.0.0:8080").expect("Failed to bind healthcheck port");
-        println!("Dataplane healthcheck server listening on port 8080");
+        println!("Dataplane HTTP healthcheck server listening on port 8080");
+
         for mut stream in listener.incoming().flatten() {
-            let _ = stream.write_all(b"OK\n");
+            let mut buffer = [0; 512];
+            let _ = stream.read(&mut buffer);
+            let response = "HTTP/1.1 200 OK\r\nContent-Length: 3\r\n\r\nOK\n";
+            let _ = stream.write_all(response.as_bytes());
         }
     });
 
     println!("Dataplane service started successfully.");
 
-    // Main loop
+    // Main operational loop
     while running.load(Ordering::SeqCst) {
         thread::sleep(Duration::from_secs(10));
     }
