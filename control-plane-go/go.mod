@@ -1,3 +1,9 @@
-module github.com/KevinMulcahy/ovs-layer2-switch/control-plane-go
+module controlplane
 
-go 1.20
+go 1.22
+
+require (
+	golang.org/x/net v0.25.0 // indirect
+	golang.org/x/sys v0.23.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
+)
